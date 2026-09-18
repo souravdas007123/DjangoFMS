@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Login - FactoryOS{% endblock %}
+{% block content %}
+<div class="login-wrapper">
+  <div class="login-card">
+    <div class="brand-icon"><i class="fas fa-industry"></i></div>
+    <h3 class="brand-font mb-1">FactoryOS</h3>
+    <p class="mb-4" style="color:rgba(255,255,255,.6);font-size:14px;">Sign in to your Factory Management System</p>
+
+    {% if form.errors %}
+      <div class="alert alert-danger py-2" style="font-size:13px;">Invalid username or password. Please try again.</div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label class="form-label" style="font-size:13px;">Username</label>
+        <input type="text" name="username" class="form-control" placeholder="Enter username" required autofocus>
+      </div>
+      <div class="mb-4">
+        <label class="form-label" style="font-size:13px;">Password</label>
+        <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+      </div>
+      <button type="submit" class="btn btn-fms w-100">Sign In <i class="fas fa-arrow-right ms-1"></i></button>
+      <input type="hidden" name="next" value="{{ next }}">
+    </form>
+    <p class="text-center mt-4 mb-0" style="font-size:12px;color:rgba(255,255,255,.45);">
+      Full admin CRUD available at <a href="/admin/" style="color:#93c5fd;">/admin/</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

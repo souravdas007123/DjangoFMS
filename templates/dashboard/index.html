@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Dashboard - FactoryOS{% endblock %}
+
+{% block content %}
+<div class="app-shell">
+  <div class="app-sidebar">
+    <div class="logo"><i class="fas fa-industry"></i></div>
+    <a href="{% url 'dashboard:index' %}" class="active" title="Dashboard"><i class="fas fa-chart-pie"></i></a>
+    <a href="/admin/masters/" title="Masters"><i class="fas fa-boxes-stacked"></i></a>
+    <a href="/admin/sales/" title="Sales"><i class="fas fa-cart-shopping"></i></a>
+    <a href="/admin/purchase/" title="Purchase"><i class="fas fa-file-contract"></i></a>
+    <a href="/admin/inventory/" title="Inventory"><i class="fas fa-warehouse"></i></a>
+    <a href="/admin/production/" title="Production"><i class="fas fa-cogs"></i></a>
+    <a href="/admin/quality/" title="Quality"><i class="fas fa-clipboard-check"></i></a>
+    <a href="/admin/maintenance/" title="Maintenance"><i class="fas fa-wrench"></i></a>
+    <a href="/admin/hr/" title="Workforce"><i class="fas fa-users"></i></a>
+    <a href="/admin/dispatch/" title="Dispatch"><i class="fas fa-truck-fast"></i></a>
+    <a href="/admin/costing/" title="Costing"><i class="fas fa-rupee-sign"></i></a>
+    <a href="/admin/" title="Admin Panel"><i class="fas fa-gauge-high"></i></a>
+    <div style="flex:1;"></div>
+    <a href="{% url 'logout' %}" title="Logout"><i class="fas fa-power-off"></i></a>
+  </div>
+
+  <div class="app-main">
+    <div class="topbar">
+      <div>
+        <h4>🏭 Factory Overview</h4>
+        <div style="font-size:12.5px;color:var(--fms-muted);">{{ today|date:"l, d M Y" }} · Welcome back, {{ request.user.get_full_name|default:request.user.username }}</div>
+      </div>
+      <div class="d-flex gap-2">
+        <a href="/admin/" class="btn btn-fms btn-sm"><i class="fas fa-plus me-1"></i> New Document</a>
+      </div>
+    </div>
+
+    <div class="page-wrap">
+
+      <!-- KPI ROW 1 -->
+      <div class="row g-3 mb-3">
+        <div class="col-6 col-lg-3">
+          <div class="kpi-card">
+            <div class="kpi-icon bg-grad-indigo"><i class="fas fa-industry"></i></div>
+            <div class="kpi-value">{{ total_produced|floatformat:0|intcomma }}</div>
+            <div class="kpi-label">Total Units Produced</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="kpi-card">
+            <div class="kpi-icon bg-grad-green"><i class="fas fa-check-double"></i></div>
+            <div class="kpi-value">{{ yield_percent }}%</div>
+            <div class="kpi-label">Overall Yield</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="kpi-card">
+            <div class="kpi-icon bg-grad-red"><i class="fas fa-triangle-exclamation"></i></div>
+            <div class="kpi-value">{{ rejection_percent }}%</div>
+            <div class="kpi-label">Rejection Rate</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="kpi-card">
+            <div class="kpi-icon bg-grad-amber"><i class="fas fa-recycle"></i></div>
+            <div class="kpi-value">{{ scrap_percent }}%</div>
+            <div class="kpi-label">Scrap Rate</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI ROW 2 -->
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+          <div class="kpi-card">
+            <div class="kpi-icon bg-grad-cyan"><i class="fas fa-warehouse"></i></div>
+            <div class="kpi-value">{{ low_stock_count }}</div>
+            <div class="kpi-label">Low Stock Items</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="kpi-card">
+            <div class="kpi-icon bg-grad-navy"><i class="fas fa-file-invoice-dollar"></i></div>
+            <div class="kpi-value">{{ pending_po }}</div>
+            <div class="kpi-label">Pending Purchase Orders</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="kpi-card">
+            <div class="kpi-icon bg-grad-indigo"><i class="fas fa-shopping-cart"></i></div>
+            <div class="kpi-value">{{ open_sales_orders }}</div>
+            <div class="kpi-label">Open Sales Orders</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="kpi-card">
+            <div class="kpi-icon bg-grad-red"><i class="fas fa-screwdriver-wrench"></i></div>
+            <div class="kpi-value">{{ machines_breakdown }}/{{ machines_total }}</div>
+            <div class="kpi-label">Machines Under Breakdown</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <!-- Production trend chart -->
+        <div class="col-lg-8">
+          <div class="panel mb-3">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <div class="panel-title">Production Health</div>
+                <div class="panel-sub">Yield vs Rejection vs Scrap (overall)</div>
+              </div>
+            </div>
+            <canvas id="healthChart" height="90"></canvas>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title mb-0">Recent Production Orders</div>
+            <div class="panel-sub">Latest manufacturing orders raised on the shop floor</div>
+            <div class="table-responsive">
+              <table class="table table-fms mb-0">
+                <thead><tr><th>Order No.</th><th>Product</th><th>Qty</th><th>Produced</th><th>Status</th></tr></thead>
+                <tbody>
+                {% for po in recent_production_orders %}
+                  <tr>
+                    <td class="fw-semibold">{{ po.number }}</td>
+                    <td>{{ po.product.name }}</td>
+                    <td>{{ po.quantity }}</td>
+                    <td>{{ po.produced_quantity }}</td>
+                    <td>
+                      {% if po.status == "COMPLETED" or po.status == "CLOSED" %}
+                        <span class="status-pill ok">{{ po.get_status_display }}</span>
+                      {% elif po.status == "IN_PROGRESS" or po.status == "RELEASED" %}
+                        <span class="status-pill info">{{ po.get_status_display }}</span>
+                      {% elif po.status == "CANCELLED" %}
+                        <span class="status-pill bad">{{ po.get_status_display }}</span>
+                      {% else %}
+                        <span class="status-pill warn">{{ po.get_status_display }}</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr><td colspan="5" class="text-center text-muted py-4">No production orders yet — add one from the Admin panel.</td></tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right column -->
+        <div class="col-lg-4">
+          <div class="panel mb-3">
+            <div class="panel-title">Quick Access</div>
+            <div class="panel-sub">Jump straight into a module</div>
+            <div class="d-flex flex-column gap-2">
+              <a class="quick-link" href="/admin/production/productionorder/add/"><span class="qi bg-grad-indigo"><i class="fas fa-plus"></i></span> New Production Order</a>
+              <a class="quick-link" href="/admin/sales/salesorder/add/"><span class="qi bg-grad-green"><i class="fas fa-cart-plus"></i></span> New Sales Order</a>
+              <a class="quick-link" href="/admin/purchase/purchaseorder/add/"><span class="qi bg-grad-amber"><i class="fas fa-file-circle-plus"></i></span> New Purchase Order</a>
+              <a class="quick-link" href="/admin/purchase/grn/add/"><span class="qi bg-grad-cyan"><i class="fas fa-dolly"></i></span> New GRN</a>
+              <a class="quick-link" href="/admin/quality/ncr/add/"><span class="qi bg-grad-red"><i class="fas fa-exclamation"></i></span> Raise NCR</a>
+            </div>
+          </div>
+
+          <div class="panel mb-3">
+            <div class="panel-title">Quality Snapshot</div>
+            <div class="panel-sub">Open vs Closed NCRs and pending inspections</div>
+            <canvas id="qualityChart" height="160"></canvas>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">Low Stock Alerts</div>
+            <div class="panel-sub">Items at or below reorder level</div>
+            {% for row in low_stock_products %}
+              <div class="d-flex justify-content-between align-items-center py-2" style="border-bottom:1px solid #f2f3fb;">
+                <div>
+                  <div class="fw-semibold" style="font-size:13.5px;">{{ row.product.code }}</div>
+                  <div style="font-size:11.5px;color:var(--fms-muted);">{{ row.product.name }}</div>
+                </div>
+                <span class="status-pill bad">{{ row.balance|floatformat:0 }} {{ row.product.unit.code }}</span>
+              </div>
+            {% empty %}
+              <div class="text-muted text-center py-4" style="font-size:13px;">Stock levels look healthy 👍</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script>
+const healthCtx = document.getElementById('healthChart');
+new Chart(healthCtx, {
+  type: 'bar',
+  data: {
+    labels: ['Yield %', 'Rejection %', 'Scrap %'],
+    datasets: [{
+      label: 'Percent',
+      data: [{{ yield_percent }}, {{ rejection_percent }}, {{ scrap_percent }}],
+      backgroundColor: ['#10b981', '#ef4444', '#f59e0b'],
+      borderRadius: 10,
+      maxBarThickness: 60,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: true, max: 100, grid: { color: '#f0f1fa' } }, x: { grid: { display: false } } }
+  }
+});
+
+const qualityCtx = document.getElementById('qualityChart');
+new Chart(qualityCtx, {
+  type: 'doughnut',
+  data: {
+    labels: ['Open NCR', 'Closed NCR', 'Pending Inspections'],
+    datasets: [{
+      data: [{{ open_ncr }}, {{ closed_ncr }}, {{ pending_inspections }}],
+      backgroundColor: ['#ef4444', '#10b981', '#f59e0b'],
+      borderWidth: 0,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } } },
+    cutout: '65%'
+  }
+});
+</script>
+{% endblock %}
