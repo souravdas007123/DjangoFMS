@@ -15,7 +15,7 @@ ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     # Admin theme (professional flashy UI) - must be before django.contrib.admin
-
+    "jazzmin",
 
     "django.contrib.admin",
     "django.contrib.auth",
