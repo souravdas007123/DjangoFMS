@@ -4,15 +4,18 @@
 
 {% block page %}
 <div class="page-head">
-  <div>
-    <h1>{{ title }}</h1>
-    <div class="sub">{{ cfg.verbose_name|capfirst }}</div>
+  <div class="d-flex align-items-center gap-3">
+    <span class="page-icon"><i class="fas {{ cfg.group_icon }}"></i></span>
+    <div>
+      <h1>{{ title }}{% if status %}{% with cell=status %}{% include "ui/_cell.html" %}{% endwith %}{% endif %}</h1>
+      <div class="sub">{{ cfg.verbose_name|capfirst }}{% if created %} · Created {{ created }}{% endif %}{% if updated and updated != created %} · Updated {{ updated }}{% endif %}</div>
+    </div>
   </div>
-  <div class="d-flex gap-2">
-    <a href="{{ cfg.list_url }}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i> Back</a>
-    <button type="button" class="btn btn-outline-secondary d-none d-md-inline-block" onclick="window.print()"><i class="fas fa-print me-1"></i> Print</button>
-    {% if can_change %}<a href="{{ edit_url }}" class="btn btn-primary"><i class="fas fa-pen me-1"></i> Edit</a>{% endif %}
-    {% if can_delete %}<a href="{{ delete_url }}" class="btn btn-outline-danger"><i class="fas fa-trash me-1"></i> Delete</a>{% endif %}
+  <div class="head-actions">
+    <a href="{{ cfg.list_url }}" class="btn btn-ghost"><i class="fas fa-arrow-left"></i><span>Back</span></a>
+    <button type="button" class="btn btn-ghost d-none d-md-inline-flex" onclick="window.print()"><i class="fas fa-print"></i><span>Print</span></button>
+    {% if can_delete %}<a href="{{ delete_url }}" class="btn btn-soft-danger"><i class="fas fa-trash"></i><span>Delete</span></a>{% endif %}
+    {% if can_change %}<a href="{{ edit_url }}" class="btn btn-primary"><i class="fas fa-pen"></i><span>Edit</span></a>{% endif %}
   </div>
 </div>
 

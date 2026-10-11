@@ -21,9 +21,9 @@
         </td>
         {% endfor %}
         <td class="row-actions">
-          <a href="{{ row.detail_url }}" class="btn btn-sm btn-outline-secondary" title="View"><i class="fas fa-eye"></i></a>
-          {% if row.edit_url %}<a href="{{ row.edit_url }}" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-pen"></i></a>{% endif %}
-          {% if row.delete_url %}<a href="{{ row.delete_url }}" class="btn btn-sm btn-outline-danger" title="Delete"><i class="fas fa-trash"></i></a>{% endif %}
+          <a href="{{ row.detail_url }}" class="row-btn" title="View" aria-label="View"><i class="fas fa-eye"></i></a>
+          {% if row.edit_url %}<a href="{{ row.edit_url }}" class="row-btn" title="Edit" aria-label="Edit"><i class="fas fa-pen"></i></a>{% endif %}
+          {% if row.delete_url %}<a href="{{ row.delete_url }}" class="row-btn danger" title="Delete" aria-label="Delete"><i class="fas fa-trash"></i></a>{% endif %}
         </td>
       </tr>
       {% empty %}
@@ -32,7 +32,7 @@
           <div class="empty-state">
             <i class="fas fa-inbox d-block"></i>
             {% if has_filters %}No {{ cfg.verbose_name_plural }} match your search or filters.{% else %}No {{ cfg.verbose_name_plural }} yet.{% endif %}
-            {% if can_add and not has_filters %}<div class="mt-3"><a href="{{ cfg.create_url }}" class="btn btn-primary btn-sm">Add the first one</a></div>{% endif %}
+            {% if can_add and not has_filters %}<div class="mt-3"><a href="{{ cfg.create_url }}" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Add the first one</a></div>{% endif %}
           </div>
         </td>
       </tr>

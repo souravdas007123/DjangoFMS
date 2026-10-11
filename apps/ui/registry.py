@@ -29,6 +29,7 @@ GROUPS = (
     ("costing", "Costing", "fa-rupee-sign"),
 )
 GROUP_LABELS = {key: label for key, label, _icon in GROUPS}
+GROUP_ICONS = {key: icon for key, _label, icon in GROUPS}
 
 
 @dataclass(frozen=True)
@@ -75,6 +76,10 @@ class ModelConfig:
     @property
     def group_label(self):
         return GROUP_LABELS[self.group]
+
+    @property
+    def group_icon(self):
+        return GROUP_ICONS[self.group]
 
     def perm(self, action):
         return f"{self.app_label}.{action}_{self.model_name}"

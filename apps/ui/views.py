@@ -224,9 +224,16 @@ class DetailPage(ModelView):
                 "rows": [[display(o, n) for n in names] for o in qs.order_by("pk")],
             })
 
+        status = display(obj, "status") if cfg.field("status") is not None else None
+        created = display(obj, "created_at")["text"] if cfg.field("created_at") is not None else ""
+        updated = display(obj, "updated_at")["text"] if cfg.field("updated_at") is not None else ""
+
         context = self.base_context(
             obj=obj,
             title=str(obj),
+            status=status,
+            created=created,
+            updated=updated,
             fields=fields,
             stats=stats,
             tables=tables,

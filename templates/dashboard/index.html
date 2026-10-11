@@ -4,15 +4,23 @@
 {% block crumbs %}Dashboard{% endblock %}
 
 {% block page %}
-<div class="page-head">
-  <div>
-    <h1>Factory overview</h1>
-    <div class="sub">{{ today|date:"l, d M Y" }} · Welcome back, {{ request.user.get_full_name|default:request.user.username }}</div>
+<section class="hero">
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+    <div>
+      <h1>Good {{ greeting }}, {{ request.user.get_full_name|default:request.user.username }} 👋</h1>
+      <p>Here is what is happening on the factory floor · {{ today|date:"l, d M Y" }}</p>
+    </div>
+    {% if perms.production.add_productionorder %}
+    <a href="{% url 'ui:create' 'production' 'productionorder' %}" class="btn btn-light"><i class="fas fa-plus"></i><span>New production order</span></a>
+    {% endif %}
   </div>
-  {% if perms.production.add_productionorder %}
-  <a href="{% url 'ui:create' 'production' 'productionorder' %}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> New production order</a>
-  {% endif %}
-</div>
+  <div class="hero-pills">
+    <span class="hero-pill"><i class="fas fa-cart-shopping"></i><b>{{ open_sales_orders }}</b> open sales orders</span>
+    <span class="hero-pill"><i class="fas fa-file-invoice-dollar"></i><b>{{ pending_po }}</b> pending purchase orders</span>
+    <span class="hero-pill"><i class="fas fa-warehouse"></i><b>{{ low_stock_count }}</b> low stock items</span>
+    <span class="hero-pill"><i class="fas fa-screwdriver-wrench"></i><b>{{ machines_breakdown }}</b> machines down</span>
+  </div>
+</section>
 
 <div class="row g-3 mb-3">
   <div class="col-6 col-xl-3"><div class="card-ui kpi"><div class="kpi-icon g-indigo"><i class="fas fa-industry"></i></div><div><div class="kpi-value tabular">{{ total_produced|floatformat:0|intcomma }}</div><div class="kpi-label">Units produced</div></div></div></div>

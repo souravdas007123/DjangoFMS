@@ -4,13 +4,16 @@
 
 {% block page %}
 <div class="page-head">
-  <div>
-    <h1>{{ cfg.verbose_name_plural|capfirst }}</h1>
-    <div class="sub">{{ cfg.group_label }}</div>
+  <div class="d-flex align-items-center gap-3">
+    <span class="page-icon"><i class="fas {{ cfg.group_icon }}"></i></span>
+    <div>
+      <h1>{{ cfg.verbose_name_plural|capfirst }}</h1>
+      <div class="sub">{{ cfg.group_label }}</div>
+    </div>
   </div>
-  <div class="d-flex gap-2">
-    <a href="{{ export_url }}" class="btn btn-outline-secondary"><i class="fas fa-file-csv me-1"></i> Export CSV</a>
-    {% if can_add %}<a href="{{ cfg.create_url }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> New {{ cfg.verbose_name }}</a>{% endif %}
+  <div class="head-actions">
+    <a href="{{ export_url }}" class="btn btn-ghost" title="Download as CSV (opens in Excel)"><i class="fas fa-download"></i><span>Export</span></a>
+    {% if can_add %}<a href="{{ cfg.create_url }}" class="btn btn-primary"><i class="fas fa-plus"></i><span>New {{ cfg.verbose_name }}</span></a>{% endif %}
   </div>
 </div>
 
@@ -33,7 +36,7 @@
     {% endfor %}
     {% if ordering %}<input type="hidden" name="o" value="{{ ordering }}">{% endif %}
     <noscript><button type="submit" class="btn btn-primary">Apply</button></noscript>
-    {% if has_filters %}<a href="{{ reset_url }}" class="btn btn-link text-muted">Reset</a>{% endif %}
+    {% if has_filters %}<a href="{{ reset_url }}" class="btn btn-sm btn-soft"><i class="fas fa-rotate-left"></i> Reset</a>{% endif %}
   </form>
 
   <div id="results">{% include "ui/_results.html" %}</div>

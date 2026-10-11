@@ -19,11 +19,11 @@
           </a>
           <div class="nav-label">Modules</div>
           {% for group in ui_nav %}
-          <div class="nav-group">
+          <div class="nav-group" data-g="{{ forloop.counter0 }}">
             <button type="button" class="nav-group-toggle {% if not group.open %}collapsed{% endif %}"
                     data-bs-toggle="collapse" data-bs-target="#grp-{{ group.key }}"
                     aria-expanded="{% if group.open %}true{% else %}false{% endif %}">
-              <i class="fas {{ group.icon }}"></i><span>{{ group.label }}</span><i class="fas fa-chevron-down caret"></i>
+              <span class="ico"><i class="fas {{ group.icon }}"></i></span><span>{{ group.label }}</span><i class="fas fa-chevron-down caret"></i>
             </button>
             <div id="grp-{{ group.key }}" class="collapse {% if group.open %}show{% endif %}">
               {% for item in group.items %}

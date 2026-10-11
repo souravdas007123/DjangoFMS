@@ -242,3 +242,27 @@ class PermissionTests(UiTestCase):
         self.client.force_login(self.make_user("view_customer"))
         html = self.client.get(self.url("list", "masters", "customer")).content.decode()
         self.assertNotIn(self.url("create", "masters", "customer"), html)
+
+
+class PolishTests(UiTestCase):
+    def test_list_header_has_export_and_add_buttons(self):
+        html = self.client.get(self.url("list", "masters", "customer")).content.decode()
+        self.assertIn("btn btn-ghost", html)
+        self.assertIn("Export", html)
+        self.assertIn(self.url("create", "masters", "customer"), html)
+
+    def test_detail_shows_status_badge_for_documents(self):
+        order = SalesOrder.objects.get(number="SO-00001")
+        html = self.client.get(self.url("detail", "sales", "salesorder", order.pk)).content.decode()
+        self.assertIn("badge-soft-info", html)  # IN_PRODUCTION
+        self.assertIn("In Production", html)
+
+    def test_sidebar_groups_have_icon_tiles_and_colours(self):
+        html = self.client.get("/").content.decode()
+        self.assertIn('data-g="0"', html)
+        self.assertIn('class="ico"', html)
+
+    def test_dashboard_greets_the_user(self):
+        resp = self.client.get("/")
+        self.assertIn(resp.context["greeting"], {"morning", "afternoon", "evening"})
+        self.assertContains(resp, "hero-pill")

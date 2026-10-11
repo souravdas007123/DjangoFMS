@@ -82,8 +82,12 @@ def index(request):
     machines_total = Machine.objects.count()
     machines_breakdown = Machine.objects.filter(status=Machine.Status.BREAKDOWN).count()
 
+    hour = timezone.localtime().hour
+    greeting = "morning" if hour < 12 else "afternoon" if hour < 17 else "evening"
+
     context = {
         "today": today,
+        "greeting": greeting,
         "total_produced": total_produced,
         "yield_percent": yield_percent,
         "rejection_percent": rejection_percent,

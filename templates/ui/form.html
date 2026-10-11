@@ -4,9 +4,12 @@
 
 {% block page %}
 <div class="page-head">
-  <div>
-    <h1>{{ title }}</h1>
-    <div class="sub">{{ cfg.group_label }} · {{ cfg.verbose_name|capfirst }}</div>
+  <div class="d-flex align-items-center gap-3">
+    <span class="page-icon"><i class="fas {{ cfg.group_icon }}"></i></span>
+    <div>
+      <h1>{{ title }}</h1>
+      <div class="sub">{{ cfg.group_label }} · {{ cfg.verbose_name|capfirst }}</div>
+    </div>
   </div>
 </div>
 
@@ -46,7 +49,7 @@
   <div class="card-ui">
     <div class="card-head">
       <h5>{{ item.spec.label }}</h5>
-      <button type="button" class="btn btn-sm btn-outline-primary" data-add-row="{{ fs.prefix }}"><i class="fas fa-plus me-1"></i> Add row</button>
+      <button type="button" class="btn btn-sm btn-soft" data-add-row="{{ fs.prefix }}"><i class="fas fa-plus"></i> Add row</button>
     </div>
     {{ fs.management_form }}
     {% if fs.non_form_errors %}<div class="alert alert-danger m-3">{% for error in fs.non_form_errors %}<div>{{ error }}</div>{% endfor %}</div>{% endif %}
@@ -69,8 +72,8 @@
   {% endfor %}
 
   <div class="action-bar">
-    <a href="{{ cancel_url }}" class="btn btn-outline-secondary">Cancel</a>
-    <button type="submit" class="btn btn-primary"><i class="fas fa-floppy-disk me-1"></i> Save {{ cfg.verbose_name }}</button>
+    <a href="{{ cancel_url }}" class="btn btn-ghost">Cancel</a>
+    <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Save {{ cfg.verbose_name }}</button>
   </div>
 </form>
 {% endblock %}
