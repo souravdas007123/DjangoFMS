@@ -72,6 +72,12 @@ h1,h2,h3,h4,h5,.brand-font{ font-family:'Poppins',sans-serif; }
   text-decoration:none; transition:.15s ease;
 }
 .app-sidebar a:hover, .app-sidebar a.active{ background:rgba(255,255,255,.12); color:#fff; }
+.app-sidebar .sidebar-btn{
+  width:48px; height:48px; border-radius:12px; color:rgba(255,255,255,.65);
+  display:flex; align-items:center; justify-content:center; font-size:18px;
+  background:none; border:0; cursor:pointer; transition:.15s ease;
+}
+.app-sidebar .sidebar-btn:hover{ background:rgba(255,255,255,.12); color:#fff; }
 
 .app-main{ flex:1; min-width:0; }
 

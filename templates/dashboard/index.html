@@ -19,7 +19,10 @@
     <a href="/admin/costing/" title="Costing"><i class="fas fa-rupee-sign"></i></a>
     <a href="/admin/" title="Admin Panel"><i class="fas fa-gauge-high"></i></a>
     <div style="flex:1;"></div>
-    <a href="{% url 'logout' %}" title="Logout"><i class="fas fa-power-off"></i></a>
+    <form method="post" action="{% url 'logout' %}" class="m-0">
+      {% csrf_token %}
+      <button type="submit" class="sidebar-btn" title="Logout"><i class="fas fa-power-off"></i></button>
+    </form>
   </div>
 
   <div class="app-main">
@@ -168,7 +171,7 @@
 
           <div class="panel">
             <div class="panel-title">Low Stock Alerts</div>
-            <div class="panel-sub">Items at or below reorder level</div>
+            <div class="panel-sub">Items at or below reorder level · Net stock value ₹{{ total_stock_value|floatformat:0|intcomma }}</div>
             {% for row in low_stock_products %}
               <div class="d-flex justify-content-between align-items-center py-2" style="border-bottom:1px solid #f2f3fb;">
                 <div>

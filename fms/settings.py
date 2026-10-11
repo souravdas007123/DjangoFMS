@@ -7,15 +7,26 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get("FMS_SECRET_KEY", "django-insecure-change-this-in-production-fms-2026")
+# Config comes from environment variables; defaults below are for local development only.
+#   FMS_SECRET_KEY     - REQUIRED when FMS_DEBUG=0
+#   FMS_DEBUG          - "1" (default) or "0"
+#   FMS_ALLOWED_HOSTS  - comma separated, e.g. "fms.example.com,10.0.0.5"
+DEBUG = os.environ.get("FMS_DEBUG", "1") == "1"
 
-DEBUG = True
+SECRET_KEY = os.environ.get("FMS_SECRET_KEY", "")
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = "django-insecure-dev-only-key-do-not-use-in-production"
+    else:
+        raise RuntimeError("Set the FMS_SECRET_KEY environment variable when FMS_DEBUG=0.")
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get("FMS_ALLOWED_HOSTS", "").split(",") if h.strip()]
+if DEBUG and not ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]"]
 
 INSTALLED_APPS = [
     # Admin theme (professional flashy UI) - must be before django.contrib.admin
-
+    "jazzmin",
 
     "django.contrib.admin",
     "django.contrib.auth",
@@ -168,7 +179,7 @@ JAZZMIN_SETTINGS = {
         "maintenance.MaintenanceWorkOrder": "fas fa-wrench",
         "maintenance.SparePart": "fas fa-cog",
 
-        "hr.Employee": "fas fa-id-badge",
+        "masters.Employee": "fas fa-id-badge",
         "hr.Shift": "fas fa-business-time",
         "hr.Attendance": "fas fa-calendar-day",
 

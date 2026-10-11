@@ -73,9 +73,10 @@ class ProductionOrder(TimeStampedModel):
 
     @property
     def yield_percent(self):
-        if self.quantity:
+        """Good units as a % of units actually produced (same definition as the dashboard)."""
+        if self.produced_quantity:
             good = self.produced_quantity - self.rejected_quantity - self.scrap_quantity
-            return round((good / self.quantity) * 100, 2)
+            return round((good / self.produced_quantity) * 100, 2)
         return 0
 
 
