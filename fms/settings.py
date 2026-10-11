@@ -50,6 +50,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # serves /static/ in production
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -110,3 +111,22 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "/accounts/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/accounts/login/"
+
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
+}
+
+# -------------------------------------------------------------------
+# Production behind an HTTPS reverse proxy (CloudPanel / Nginx)
+# -------------------------------------------------------------------
+_LOCAL_HOSTS = {"localhost", "127.0.0.1", "[::1]"}
+CSRF_TRUSTED_ORIGINS = [
+    o.strip() for o in os.environ.get("FMS_CSRF_TRUSTED_ORIGINS", "").split(",") if o.strip()
+] or [f"https://{h}" for h in ALLOWED_HOSTS if h not in _LOCAL_HOSTS and "*" not in h and not h.startswith(".")]
+
+if not DEBUG:
+    # Nginx terminates TLS and forwards the original scheme.
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True

@@ -99,3 +99,12 @@ Har app ka `models.py` aur `admin.py` alag hai — naya field ya model add karna
 - Set `DEBUG = False` and configure `ALLOWED_HOSTS`
 - Switch `DATABASES` to PostgreSQL/MySQL
 - Run behind Gunicorn/Nginx, collect static files: `python manage.py collectstatic`
+
+## Deploy on CloudPanel (Python site)
+
+1. DNS: add an `A` record `fms` -> server IP. In CloudPanel create a **Python site** for `fms.socialflylive.com` (note the site user), then issue a Let's Encrypt certificate.
+2. As the site user, put the code in `~/htdocs/fms.socialflylive.com/` and run `deploy/setup.sh fms.socialflylive.com`, then `createsuperuser`.
+3. As root run `deploy/install_service.sh <site-user> fms.socialflylive.com 8010` and set the site's App Port to `8010` in CloudPanel.
+4. Updates: `deploy/update.sh` (site user) then `systemctl restart factoryos` (root).
+
+Config lives in `.env` (see `.env.example`). Back up `db.sqlite3` and `media/`.
