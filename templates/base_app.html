@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="app">
+  <aside class="sidebar-wrap">
+    <div class="sidebar offcanvas-lg offcanvas-start" tabindex="-1" id="sidebar" aria-label="Main navigation">
+      <div class="sidebar-inner">
+        <div class="d-flex align-items-start justify-content-between">
+          <a class="brand" href="{% url 'dashboard:index' %}">
+            <span class="brand-mark"><i class="fas fa-industry"></i></span>
+            <span><span class="brand-name d-block">FactoryOS</span><span class="brand-sub">Factory Management</span></span>
+          </a>
+          <button type="button" class="btn-close btn-close-white d-lg-none mt-2" data-bs-dismiss="offcanvas" data-bs-target="#sidebar" aria-label="Close"></button>
+        </div>
+
+        <nav>
+          <a class="nav-top {% if request.resolver_match.namespace == 'dashboard' %}active{% endif %}" href="{% url 'dashboard:index' %}">
+            <i class="fas fa-chart-pie"></i> Dashboard
+          </a>
+          <div class="nav-label">Modules</div>
+          {% for group in ui_nav %}
+          <div class="nav-group">
+            <button type="button" class="nav-group-toggle {% if not group.open %}collapsed{% endif %}"
+                    data-bs-toggle="collapse" data-bs-target="#grp-{{ group.key }}"
+                    aria-expanded="{% if group.open %}true{% else %}false{% endif %}">
+              <i class="fas {{ group.icon }}"></i><span>{{ group.label }}</span><i class="fas fa-chevron-down caret"></i>
+            </button>
+            <div id="grp-{{ group.key }}" class="collapse {% if group.open %}show{% endif %}">
+              {% for item in group.items %}
+              <a class="sub-link {% if item.active %}active{% endif %}" href="{{ item.url }}">{{ item.label }}</a>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+        </nav>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar" aria-label="Open menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="me-auto">
+        <div class="crumbs">{% block crumbs %}<a href="{% url 'dashboard:index' %}">Home</a>{% endblock %}</div>
+      </div>
+      <button class="icon-btn" type="button" data-theme-toggle title="Toggle light / dark" aria-label="Toggle theme">
+        <i class="fas fa-circle-half-stroke"></i>
+      </button>
+      <div class="dropdown">
+        <button class="btn p-0 border-0 d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <span class="avatar">{{ request.user.username|slice:":1"|upper }}</span>
+          <span class="d-none d-md-inline fw-semibold">{{ request.user.get_full_name|default:request.user.username }}</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+          <li class="dropdown-header">Signed in as {{ request.user.username }}</li>
+          {% if request.user.is_superuser %}
+          <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="fas fa-user-shield me-2"></i>Admin (backup)</a></li>
+          {% endif %}
+          <li>
+            <form method="post" action="{% url 'logout' %}" class="m-0">
+              {% csrf_token %}
+              <button type="submit" class="dropdown-item"><i class="fas fa-right-from-bracket me-2"></i>Sign out</button>
+            </form>
+          </li>
+        </ul>
+      </div>
+    </header>
+
+    <main class="content">
+      {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'info' }}{% endif %} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {% endfor %}
+      {% block page %}{% endblock %}
+    </main>
+  </div>
+</div>
+{% endblock %}

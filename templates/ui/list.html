@@ -1,0 +1,41 @@
+{% extends "base_app.html" %}
+{% block title %}{{ cfg.verbose_name_plural|capfirst }} · FactoryOS{% endblock %}
+{% block crumbs %}<a href="{% url 'dashboard:index' %}">Home</a> / {{ cfg.group_label }} / <span class="text-body">{{ cfg.verbose_name_plural|capfirst }}</span>{% endblock %}
+
+{% block page %}
+<div class="page-head">
+  <div>
+    <h1>{{ cfg.verbose_name_plural|capfirst }}</h1>
+    <div class="sub">{{ cfg.group_label }}</div>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{{ export_url }}" class="btn btn-outline-secondary"><i class="fas fa-file-csv me-1"></i> Export CSV</a>
+    {% if can_add %}<a href="{{ cfg.create_url }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> New {{ cfg.verbose_name }}</a>{% endif %}
+  </div>
+</div>
+
+<div class="card-ui">
+  <form class="toolbar" method="get" action="{{ list_url }}"
+        hx-get="{{ list_url }}" hx-target="#results" hx-push-url="true" hx-trigger="input changed delay:300ms, change">
+    {% if cfg.search_fields %}
+    <div class="search">
+      <i class="fas fa-magnifying-glass"></i>
+      <input type="search" name="q" value="{{ query }}" class="form-control" placeholder="Search {{ cfg.verbose_name_plural }}…" autocomplete="off" aria-label="Search">
+    </div>
+    {% endif %}
+    {% for control in filter_controls %}
+    <select name="{{ control.name }}" class="form-select" aria-label="{{ control.label }}">
+      <option value="">{{ control.label }}: all</option>
+      {% for value, label in control.options %}
+      <option value="{{ value }}" {% if value == control.value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    {% endfor %}
+    {% if ordering %}<input type="hidden" name="o" value="{{ ordering }}">{% endif %}
+    <noscript><button type="submit" class="btn btn-primary">Apply</button></noscript>
+    {% if has_filters %}<a href="{{ reset_url }}" class="btn btn-link text-muted">Reset</a>{% endif %}
+  </form>
+
+  <div id="results">{% include "ui/_results.html" %}</div>
+</div>
+{% endblock %}

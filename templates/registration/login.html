@@ -1,32 +1,50 @@
 {% extends "base.html" %}
-{% block title %}Login - FactoryOS{% endblock %}
+{% block title %}Sign in · FactoryOS{% endblock %}
 {% block content %}
-<div class="login-wrapper">
-  <div class="login-card">
-    <div class="brand-icon"><i class="fas fa-industry"></i></div>
-    <h3 class="brand-font mb-1">FactoryOS</h3>
-    <p class="mb-4" style="color:rgba(255,255,255,.6);font-size:14px;">Sign in to your Factory Management System</p>
+<div class="auth">
+  <section class="auth-hero">
+    <div class="brand">
+      <span class="brand-mark"><i class="fas fa-industry"></i></span>
+      <span><span class="brand-name d-block">FactoryOS</span><span class="brand-sub">Factory Management System</span></span>
+    </div>
+    <div>
+      <h2>Run the whole shop floor from one screen.</h2>
+      <ul>
+        <li><i class="fas fa-check-circle"></i> Sales to dispatch in a single workflow</li>
+        <li><i class="fas fa-check-circle"></i> Live stock, production and quality KPIs</li>
+        <li><i class="fas fa-check-circle"></i> Works on desktop, tablet and phone</li>
+      </ul>
+    </div>
+    <div class="brand-sub">© FactoryOS</div>
+  </section>
 
-    {% if form.errors %}
-      <div class="alert alert-danger py-2" style="font-size:13px;">Invalid username or password. Please try again.</div>
-    {% endif %}
+  <section class="auth-panel">
+    <div class="auth-card">
+      <div class="d-lg-none brand mb-3" style="color:var(--text)">
+        <span class="brand-mark"><i class="fas fa-industry"></i></span>
+        <span class="brand-name">FactoryOS</span>
+      </div>
+      <h1 class="h3 fw-bold mb-1">Welcome back</h1>
+      <p class="text-muted mb-4">Sign in to continue to your dashboard.</p>
 
-    <form method="post">
-      {% csrf_token %}
-      <div class="mb-3">
-        <label class="form-label" style="font-size:13px;">Username</label>
-        <input type="text" name="username" class="form-control" placeholder="Enter username" required autofocus>
-      </div>
-      <div class="mb-4">
-        <label class="form-label" style="font-size:13px;">Password</label>
-        <input type="password" name="password" class="form-control" placeholder="Enter password" required>
-      </div>
-      <button type="submit" class="btn btn-fms w-100">Sign In <i class="fas fa-arrow-right ms-1"></i></button>
-      <input type="hidden" name="next" value="{{ next }}">
-    </form>
-    <p class="text-center mt-4 mb-0" style="font-size:12px;color:rgba(255,255,255,.45);">
-      Full admin CRUD available at <a href="/admin/" style="color:#93c5fd;">/admin/</a>
-    </p>
-  </div>
+      {% if form.errors %}
+      <div class="alert alert-danger py-2">Invalid username or password. Please try again.</div>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label" for="id_username">Username</label>
+          <input type="text" name="username" id="id_username" class="form-control form-control-lg" autocomplete="username" required autofocus>
+        </div>
+        <div class="mb-4">
+          <label class="form-label" for="id_password">Password</label>
+          <input type="password" name="password" id="id_password" class="form-control form-control-lg" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg w-100">Sign in <i class="fas fa-arrow-right ms-1"></i></button>
+        <input type="hidden" name="next" value="{{ next }}">
+      </form>
+    </div>
+  </section>
 </div>
 {% endblock %}

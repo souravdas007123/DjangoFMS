@@ -1,0 +1,76 @@
+{% extends "base_app.html" %}
+{% block title %}{{ title }} · FactoryOS{% endblock %}
+{% block crumbs %}<a href="{% url 'dashboard:index' %}">Home</a> / {{ cfg.group_label }} / <a href="{{ cfg.list_url }}">{{ cfg.verbose_name_plural|capfirst }}</a> / <span class="text-body">{{ title }}</span>{% endblock %}
+
+{% block page %}
+<div class="page-head">
+  <div>
+    <h1>{{ title }}</h1>
+    <div class="sub">{{ cfg.group_label }} · {{ cfg.verbose_name|capfirst }}</div>
+  </div>
+</div>
+
+<form method="post" novalidate {% if multipart %}enctype="multipart/form-data"{% endif %}>
+  {% csrf_token %}
+
+  {% if form.non_field_errors %}
+  <div class="alert alert-danger">{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>
+  {% endif %}
+
+  <div class="card-ui">
+    <div class="card-head"><h5>{{ cfg.verbose_name|capfirst }} details</h5></div>
+    <div class="card-body-ui">
+      <div class="row g-3">
+        {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+        {% for field in form.visible_fields %}
+        <div class="{{ field.field.col_class }}">
+          {% if field.field.widget.input_type == "checkbox" %}
+          <div class="form-check form-switch pt-2">
+            {{ field }}
+            <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          </div>
+          {% else %}
+          <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="text-danger">*</span>{% endif %}</label>
+          {{ field }}
+          {% endif %}
+          {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+          {% for error in field.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  {% for item in formsets %}
+  {% with fs=item.formset %}
+  <div class="card-ui">
+    <div class="card-head">
+      <h5>{{ item.spec.label }}</h5>
+      <button type="button" class="btn btn-sm btn-outline-primary" data-add-row="{{ fs.prefix }}"><i class="fas fa-plus me-1"></i> Add row</button>
+    </div>
+    {{ fs.management_form }}
+    {% if fs.non_form_errors %}<div class="alert alert-danger m-3">{% for error in fs.non_form_errors %}<div>{{ error }}</div>{% endfor %}</div>{% endif %}
+    <div class="table-responsive">
+      <table class="table table-modern inline-table">
+        <thead>
+          <tr>
+            {% for f in fs.empty_form.visible_fields %}{% if f.name != "DELETE" %}<th>{{ f.label }}</th>{% endif %}{% endfor %}
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="rows-{{ fs.prefix }}">
+          {% for inline_form in fs.forms %}{% include "ui/_inline_row.html" with form=inline_form %}{% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <template id="tpl-{{ fs.prefix }}">{% include "ui/_inline_row.html" with form=fs.empty_form %}</template>
+  </div>
+  {% endwith %}
+  {% endfor %}
+
+  <div class="action-bar">
+    <a href="{{ cancel_url }}" class="btn btn-outline-secondary">Cancel</a>
+    <button type="submit" class="btn btn-primary"><i class="fas fa-floppy-disk me-1"></i> Save {{ cfg.verbose_name }}</button>
+  </div>
+</form>
+{% endblock %}

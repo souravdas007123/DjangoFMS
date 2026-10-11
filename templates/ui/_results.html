@@ -1,0 +1,57 @@
+<div class="table-responsive">
+  <table class="table table-modern align-middle">
+    <thead>
+      <tr>
+        {% for col in columns %}
+        <th>
+          {% if col.sortable %}
+          <a href="{{ col.url }}" class="sort-link">{{ col.label }}{% if col.direction == "asc" %}<i class="fas fa-arrow-up"></i>{% elif col.direction == "desc" %}<i class="fas fa-arrow-down"></i>{% endif %}</a>
+          {% else %}{{ col.label }}{% endif %}
+        </th>
+        {% endfor %}
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        {% for cell in row.cells %}
+        <td {% if cell.kind == "num" %}class="text-end tabular"{% endif %}>
+          {% if forloop.first %}<a class="row-link" href="{{ row.detail_url }}">{% include "ui/_cell.html" %}</a>{% else %}{% include "ui/_cell.html" %}{% endif %}
+        </td>
+        {% endfor %}
+        <td class="row-actions">
+          <a href="{{ row.detail_url }}" class="btn btn-sm btn-outline-secondary" title="View"><i class="fas fa-eye"></i></a>
+          {% if row.edit_url %}<a href="{{ row.edit_url }}" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-pen"></i></a>{% endif %}
+          {% if row.delete_url %}<a href="{{ row.delete_url }}" class="btn btn-sm btn-outline-danger" title="Delete"><i class="fas fa-trash"></i></a>{% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="{{ colspan }}">
+          <div class="empty-state">
+            <i class="fas fa-inbox d-block"></i>
+            {% if has_filters %}No {{ cfg.verbose_name_plural }} match your search or filters.{% else %}No {{ cfg.verbose_name_plural }} yet.{% endif %}
+            {% if can_add and not has_filters %}<div class="mt-3"><a href="{{ cfg.create_url }}" class="btn btn-primary btn-sm">Add the first one</a></div>{% endif %}
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="table-foot">
+  <div>Showing {{ page.start_index }}–{{ page.end_index }} of {{ page.paginator.count }}</div>
+  {% if page.paginator.num_pages > 1 %}
+  <nav aria-label="Pages">
+    <ul class="pagination pagination-sm">
+      <li class="page-item {% if not prev_url %}disabled{% endif %}"><a class="page-link" href="{{ prev_url|default:'#' }}" aria-label="Previous">&laquo;</a></li>
+      {% for link in page_links %}
+      <li class="page-item {% if link.active %}active{% endif %} {% if not link.url %}disabled{% endif %}"><a class="page-link" href="{{ link.url|default:'#' }}">{{ link.label }}</a></li>
+      {% endfor %}
+      <li class="page-item {% if not next_url %}disabled{% endif %}"><a class="page-link" href="{{ next_url|default:'#' }}" aria-label="Next">&raquo;</a></li>
+    </ul>
+  </nav>
+  {% endif %}
+</div>

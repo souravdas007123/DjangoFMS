@@ -9,7 +9,8 @@ Sales → Planning → Procurement → Inventory → Production → Quality → 
 ## ✨ Kya milta hai is project mein
 
 - **Custom flashy dashboard** (`/`) — live KPIs (yield %, rejection %, scrap %, low stock, breakdowns, pending POs/PRs, open NCRs) + Chart.js graphs, dark-glass login screen.
-- **Professional Admin Panel** (`/admin/`) — django-jazzmin theme, full CRUD for **all 11 modules** with inline editing (BOM items, PO items, Job Cards, etc.), search, filters, date-hierarchy.
+- **Modern responsive app UI** (`/m/...`) — sidebar navigation, live search (HTMX), filters, sorting, pagination, CSV export, light/dark theme. Full CRUD for **all 11 modules** with inline line-item editing (BOM items, PO items, Job Cards, etc.). Works on desktop, tablet and phone. Access follows Django model permissions, so you can create department roles with Groups.
+- **Plain Django admin** (`/admin/`) — kept only as a superuser backup (users, groups, emergency edits). The UI reads its list/search/filter/inline settings from each app's `admin.py`, so registering a model there adds it to the app UI automatically.
 - **11 apps / 40+ models** matching the workflow: `masters`, `sales`, `purchase`, `inventory`, `production`, `quality`, `maintenance`, `hr`, `dispatch`, `costing`, `dashboard`.
 - **Demo data seeder** — one command loads a realistic "Steel Chair factory" example (BOM, routing, PO→GRN, Sales Order, Production Order, Job Card, NCR, breakdown) so the dashboard is populated instantly.
 
@@ -39,7 +40,7 @@ python manage.py runserver
 
 Open:
 - **http://127.0.0.1:8000/** → login screen → flashy dashboard
-- **http://127.0.0.1:8000/admin/** → full professional CRUD admin for every module
+- **http://127.0.0.1:8000/admin/** → plain Django admin (superuser backup)
 
 ## 📁 Project structure
 
@@ -47,7 +48,7 @@ Open:
 fms_project/
 ├── manage.py
 ├── requirements.txt
-├── fms/                    # settings, urls, wsgi/asgi, jazzmin config
+├── fms/                    # settings, urls, wsgi/asgi
 ├── apps/
 │   ├── masters/            # Product, BOM, Routing, WorkCenter, Machine, Customer, Supplier, Employee
 │   ├── sales/               # Quotation, SalesOrder, Invoice
@@ -59,12 +60,13 @@ fms_project/
 │   ├── hr/                   # Shift, Attendance, LabourAllocation
 │   ├── dispatch/              # DeliveryOrder
 │   ├── costing/               # ProductCost
-│   └── dashboard/             # custom homepage (views/urls/templates)
+│   ├── dashboard/             # homepage KPIs
+│   └── ui/                    # generic CRUD screens for every module (registry, views, forms)
 ├── templates/
 │   ├── base.html
 │   ├── registration/login.html
 │   └── dashboard/index.html
-└── static/css/style.css       # custom "FactoryOS" theme
+└── static/css/app.css, static/js/app.js   # FactoryOS design system
 ```
 
 ## 🧱 Document flow implemented
@@ -86,7 +88,6 @@ Har app ka `models.py` aur `admin.py` alag hai — naya field ya model add karna
 3. `python manage.py makemigrations && python manage.py migrate`
 
 ### Aage ka roadmap (agar chahiye to bata dena, main bana dunga):
-- Custom UI screens (non-admin) for Sales Order / Production Order entry with a polished form (abhi ye admin panel se hoti hain)
 - MRP auto-calculation engine (shortage calculation from BOM explosion)
 - Role-based permissions per department (Production Manager, Store Keeper, QC Inspector, etc.)
 - REST API (Django REST Framework) for a mobile shop-floor app
