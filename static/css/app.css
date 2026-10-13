@@ -311,7 +311,7 @@ h1, h2, h3, h4, h5 { letter-spacing: 0; }
 .btn-ghost i { color: var(--muted); }
 .btn-soft { background: var(--primary-soft); color: var(--primary); }
 .btn-danger { box-shadow: none; }
-.btn-light { background: #fff; border: 1px solid var(--border); color: var(--text); }
+.btn-light { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
 .row-btn { border-radius: 6px; }
 .row-btn:hover { transform: none; }
 .icon-btn { width: 36px; height: 36px; }
@@ -373,7 +373,7 @@ h1, h2, h3, h4, h5 { letter-spacing: 0; }
 
 /* toolbar & tables */
 .toolbar { padding: 10px 14px; }
-.toolbar .search input, .toolbar select { height: 36px; background: #fff; }
+.toolbar .search input, .toolbar select { height: 36px; background-color: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
 .table-modern thead th { font-size: 12px; text-transform: none; letter-spacing: 0; font-weight: 600; background: var(--surface); padding: 8px 12px; }
 .table-modern tbody td { padding: 8px 12px; border-color: #eef0f4; }
 .table-modern tbody tr:hover { background: var(--surface-2); }
@@ -406,3 +406,12 @@ h1, h2, h3, h4, h5 { letter-spacing: 0; }
 .auth-hero { display: none; }
 .auth-panel { background: var(--bg); }
 .auth-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 22px; max-width: 360px; }
+
+/* inputs must follow the theme (fixes white-on-white in dark mode) */
+.form-control, .form-select, .form-control:focus, .form-select:focus { background-color: var(--surface); color: var(--text); border: 1px solid var(--border); }
+.form-control:focus, .form-select:focus { border-color: var(--primary); }
+.form-control::placeholder { color: var(--muted); opacity: .8; }
+.toolbar .search input:focus, .toolbar select:focus { background-color: var(--surface); }
+[data-bs-theme="dark"] .form-select { --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e"); }
+[data-bs-theme="dark"] .table-modern thead th { background: var(--surface-2); }
+[data-bs-theme="dark"] .toolbar, [data-bs-theme="dark"] .hero-pill { color: var(--text); }
